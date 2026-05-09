@@ -1,0 +1,39 @@
+import subprocess
+
+import yt_dlp
+
+# https://www.xmodhub.com/info/xmod-blog/dead-as-disco-custom-music/
+sample_rate = "44100"
+format = "ogg"
+song_path = "songs/Song"
+
+ydl_opts = {
+    "format": f"{format}/bestaudio/best",
+    "outtmpl": song_path,
+    "postprocessors": [
+        {
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "vorbis",
+            "preferredquality": "192",  # bitrate in kbps (optional)
+        }
+    ],
+    "postprocessor_args": {
+        "extractaudio": ["-ar", sample_rate],  # sample rate → ffmpeg
+    },
+}
+
+with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+    url = input("Enter the URL of the YouTube video: ")
+    error_code = ydl.download([url])
+    if error_code:
+        print(f"Download failed with error code: {error_code}")
+        exit(1)
+
+bpm = subprocess.check_output(
+    # https://gist.github.com/brimston3/34dbb439442a723313b019b92931887b
+    f'ffmpeg -vn -i "{song_path}.{format}" -ar {sample_rate} -ac 1 -f f32le pipe:1 2>/dev/null | bpm',
+    shell=True,
+    text=True,
+).strip()
+
+print(f"Estimated BPM: {bpm}")

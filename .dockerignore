@@ -1,0 +1,13 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.ogg
+*.mp3
+*.m4a
+*.webm
+shell.nix
+README.md
+Dockerfile
+.dockerignore
