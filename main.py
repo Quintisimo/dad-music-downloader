@@ -1,6 +1,21 @@
 import subprocess
 
+import cutie
 import yt_dlp
+from youtube_search import YoutubeSearch
+
+try:
+    search = input("Search for a song: ")
+    results = YoutubeSearch(search, max_results=10).to_dict()
+
+    titles = [
+        f"{result['title']} [{result['channel']}] [{result['duration']}] [{result['views']}]"
+        for result in results
+    ]
+    url = f"https://www.youtube.com/watch?v={results[cutie.select(titles)]['id']}"
+except KeyboardInterrupt:
+    exit(0)
+
 
 # https://www.xmodhub.com/info/xmod-blog/dead-as-disco-custom-music/
 sample_rate = "44100"
@@ -23,17 +38,16 @@ ydl_opts = {
 }
 
 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-    url = input("Enter the URL of the YouTube video: ")
     error_code = ydl.download([url])
     if error_code:
         print(f"Download failed with error code: {error_code}")
         exit(1)
 
-bpm = subprocess.check_output(
-    # https://gist.github.com/brimston3/34dbb439442a723313b019b92931887b
-    f'ffmpeg -vn -i "{song_path}.{format}" -ar {sample_rate} -ac 1 -f f32le pipe:1 2>/dev/null | bpm',
-    shell=True,
-    text=True,
-).strip()
+    bpm = subprocess.check_output(
+        # https://gist.github.com/brimston3/34dbb439442a723313b019b92931887b
+        f'ffmpeg -vn -i "{song_path}.{format}" -ar {sample_rate} -ac 1 -f f32le pipe:1 2>/dev/null | bpm',
+        shell=True,
+        text=True,
+    ).strip()
 
-print(f"Estimated BPM: {bpm}")
+    print(f"Estimated BPM: {bpm}")
