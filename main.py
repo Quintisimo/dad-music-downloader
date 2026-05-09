@@ -12,7 +12,9 @@ try:
         f"{result['title']} [{result['channel']}] [{result['duration']}] [{result['views']}]"
         for result in results
     ]
-    url = f"https://www.youtube.com/watch?v={results[cutie.select(titles)]['id']}"
+    video = results[cutie.select(titles)]
+    name = video["title"]
+    url = f"https://www.youtube.com/watch?v={video['id']}"
 except KeyboardInterrupt:
     exit(0)
 
@@ -20,7 +22,7 @@ except KeyboardInterrupt:
 # https://www.xmodhub.com/info/xmod-blog/dead-as-disco-custom-music/
 sample_rate = "44100"
 format = "ogg"
-song_path = "songs/Song"
+song_path = f"songs/{name}"
 
 ydl_opts = {
     "format": f"{format}/bestaudio/best",
