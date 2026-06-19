@@ -1,4 +1,6 @@
 import subprocess
+import random
+import json
 
 import cutie
 import yt_dlp
@@ -22,7 +24,8 @@ except KeyboardInterrupt:
 # https://www.xmodhub.com/info/xmod-blog/dead-as-disco-custom-music/
 sample_rate = "44100"
 format = "ogg"
-song_path = f"songs/{name}"
+folder = f"songs/{name}"
+song_path = f"{folder}/Audio"
 
 ydl_opts = {
     "format": f"{format}/bestaudio/best",
@@ -52,4 +55,22 @@ with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         text=True,
     ).strip()
 
-    print(f"Estimated BPM: {bpm}")
+    meta = {
+      "version": 1,
+      "uniqueId": random.randint(100000000, 999999999),
+      "songName": name,
+      "performedBy": [video["channel"]],
+      "writtenBy": [video["channel"]],
+      "seed": random.randint(100000000, 999999999),
+      "tempo": int(float(bpm)),
+      "customTempoSections": [],
+      "beatOffset": 0,
+      "startSongOffset": 0,
+      "endSongOffset": 0,
+      "uEAssetName": name,
+      "originalAudioFileHash": "",
+      "originalAudioFilePath": ""
+    }
+
+    with open(f"{folder}/Meta.json", "w") as f:
+        json.dump(meta, f, indent=2)
