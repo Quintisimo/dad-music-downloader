@@ -6,5 +6,6 @@ pkgs.mkShell {
   nativeBuildInputs = with pkgs.buildPackages; [
     ffmpeg
     bpm-tools
+    deno
   ];
 }

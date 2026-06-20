@@ -6,11 +6,8 @@ dist/
 wheels/
 *.egg-info
 
-# Song files
-*.ogg
-*.mp3
-*.m4a
-*.webm
+# Song folder
+songs/
 
 # Virtual environments
 .venv
