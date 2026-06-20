@@ -20,7 +20,7 @@ RUN apt-get update \
 
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
-COPY main.py ./
+COPY src/ ./src
 
 ENV PATH="/app/.venv/bin:$PATH"
-CMD ["python", "main.py"]
+CMD ["python", "src/main.py"]

@@ -6,8 +6,7 @@ import cutie
 import yt_dlp
 from youtube_search import YoutubeSearch
 
-def clear_terminal():
-    print("\033[H\033[J", end="")
+from utils import clear_terminal, analyze_audio
 
 try:
     video_list = []
@@ -53,6 +52,7 @@ for video in video_list:
               "preferredquality": "192",  # bitrate in kbps (optional)
           }
       ],
+      "extractor-args": "youtube:player_js_version=actual",
       "postprocessor_args": {
           "extractaudio": ["-ar", sample_rate],  # sample rate → ffmpeg
       },
@@ -63,6 +63,8 @@ for video in video_list:
       if error_code:
           print(f"Download failed with error code: {error_code}")
           exit(1)
+
+      leading, trailing, duration = analyze_audio(f"{song_path}.{format}")
 
       bpm = subprocess.check_output(
           # https://gist.github.com/brimston3/34dbb439442a723313b019b92931887b
@@ -78,11 +80,11 @@ for video in video_list:
         "performedBy": [video["channel"]],
         "writtenBy": [video["channel"]],
         "seed": random.randint(100000000, 999999999),
-        "tempo": int(float(bpm)),
+        "tempo": round(float(bpm), 2),
         "customTempoSections": [],
-        "beatOffset": 0,
-        "startSongOffset": 0,
-        "endSongOffset": 0,
+        "beatOffset": round(leading * 1000),
+        "startSongOffset": round(leading, 3),
+        "endSongOffset": round(trailing, 3),
         "uEAssetName": name,
         "originalAudioFileHash": "",
         "originalAudioFilePath": ""
