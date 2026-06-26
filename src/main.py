@@ -1,4 +1,3 @@
-import subprocess
 import random
 import json
 
@@ -6,7 +5,7 @@ import cutie
 import yt_dlp
 from youtube_search import YoutubeSearch
 
-from utils import clear_terminal, analyze_audio
+from utils import clear_terminal, analyze_audio, compute_bpm, SAMPLE_RATE
 
 try:
     video_list = []
@@ -27,10 +26,7 @@ try:
 except KeyboardInterrupt:
     exit(0)
 
-
-# https://www.xmodhub.com/info/xmod-blog/dead-as-disco-custom-music/
-sample_rate = "44100"
-format = "ogg"
+FORMAT = "ogg"
 
 for video in video_list:
   name = video["title"]
@@ -43,7 +39,7 @@ for video in video_list:
 
   ydl_opts = {
       "quiet": True,
-      "format": f"{format}/bestaudio/best",
+      "format": f"{FORMAT}/bestaudio/best",
       "outtmpl": song_path,
       "postprocessors": [
           {
@@ -54,7 +50,7 @@ for video in video_list:
       ],
       "extractor-args": "youtube:player_js_version=actual",
       "postprocessor_args": {
-          "extractaudio": ["-ar", sample_rate],  # sample rate → ffmpeg
+          "extractaudio": ["-ar", str(SAMPLE_RATE)],  # sample rate → ffmpeg
       },
   }
 
@@ -64,14 +60,9 @@ for video in video_list:
           print(f"Download failed with error code: {error_code}")
           exit(1)
 
-      leading, trailing, duration = analyze_audio(f"{song_path}.{format}")
+      leading, trailing, duration = analyze_audio(f"{song_path}.{FORMAT}")
 
-      bpm = subprocess.check_output(
-          # https://gist.github.com/brimston3/34dbb439442a723313b019b92931887b
-          f'ffmpeg -vn -i "{song_path}.{format}" -ar {sample_rate} -ac 1 -f f32le pipe:1 2>/dev/null | bpm',
-          shell=True,
-          text=True,
-      ).strip()
+      bpm = compute_bpm(f"{song_path}.{FORMAT}")
 
       meta = {
         "version": 1,
@@ -80,7 +71,7 @@ for video in video_list:
         "performedBy": [video["channel"]],
         "writtenBy": [video["channel"]],
         "seed": random.randint(100000000, 999999999),
-        "tempo": round(float(bpm), 2),
+        "tempo": round(bpm, 2),
         "customTempoSections": [],
         "beatOffset": round(leading * 1000),
         "startSongOffset": round(leading, 3),

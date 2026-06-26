@@ -1,6 +1,6 @@
 # Dead As Disco Music Downloader
 
-A simple wrapper around [yt-dlp](https://github.com/yt-dlp/yt-dlp) and [bpm-tools](https://www.pogo.org.uk/~mark/bpm-tools/) to search, download songs from YouTube and add it to the game [Dead As Disco](https://deadasdisco.com/).
+A simple wrapper around [yt-dlp](https://github.com/yt-dlp/yt-dlp) and [ffmpeg](https://ffmpeg.org/) to search, download songs from YouTube and add it to the game [Dead As Disco](https://deadasdisco.com/). Tempo is detected with a built-in port of [bpm-tools](https://www.pogo.org.uk/~mark/bpm-tools/) algorithm.
 
 ## IMPORT_SONGS_PATH
 
